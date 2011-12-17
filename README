@@ -1,0 +1,103 @@
+colorize
+==========
+
+Program Overview
+--------------
+
+With this program, you can add color to the standard output.
+The simplest usage is to describe the command line as follow:
+
+$ colorize -a (color) (Target string)
+
+By using configuration file, 
+it is possible to configure more complex coloring rules.
+The configuration file format is as follows:
+
+(coloring-rule name):
+	(rule name):
+		regular:"(Regular expression for the target string)"
+		color:(color)
+
+Regular expressions must be enclosed in ".
+File name is config.yml
+Using the program  by using the configuration file are as follows: 
+
+$ colorize -r (coloring-rule) (Text containing the target string ) 
+
+
+You can use the standard input to the input of the target string.
+
+$ tail -f (somefiles) | colorize -r (coloring-rule) 
+
+
+
+How to install 
+--------------
+
++--- Download and Install
+
+$ cd /usr/local/share/
+$ git clone git@github.com:kokukuma/python-colorize.git  
+$ cd python-colorize
+$ sudo ln -s /usr/local/share/python-colorize/colorize.py /usr/bin/colorize 
+
+
+
+Example usage 
+-------------
+
++--- Simplest Use 
+
+$ colorize -a red karino
+	--> print "karino" in red 
+
+$ colorize -a green karino
+	--> print "karino" in green 
+
+
++--- Color by using color configuration file config.yml 
+
+$ colorize -r errorlog "Where is error" 
+	--> print "Where is error". Only error is red. 
+
+
++--- Add color to the standard output 
+
+$ ping google.com | colorizle -r ping 
+	--> ping output. IP addresses are shown in yellow and underlined. 
+
+
+
+Example config.yml 
+-------------
+
++--- For error syntax highlight 
+errorlog:
+    rule1:
+        regular:"\[[Ee]rror\]"
+        color:red
+    rule2:
+        regular:"\[emerg\]"
+        color:green
+
+
++--- For ping syntax highlight 
+ping:
+	rule1:
+		regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
+		color:blue
+	rule2:
+		regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
+		color:under
+	rule3:
+		regular:"from"
+		color:red
+
+
+
+Author
+------
+
+Tatsuya Karino <kokuban.kumasan@gmail.com> 
+
+---
