@@ -40,6 +40,7 @@ $ cd /usr/local/share/
 $ git clone git@github.com:kokukuma/python-colorize.git  
 $ cd python-colorize
 $ sudo ln -s /usr/local/share/python-colorize/colorize.py /usr/bin/colorize 
+$ sudo ln -s /usr/local/share/python-colorize/config.yml /etc/config.yml 
 
 
 

@@ -41,7 +41,7 @@ def Read_Color_Scheme(cs):
 
 
 	# 設定ファイル読み込み
-	handle = codecs.open( "config.yml", "r", "utf-8" )
+	handle = codecs.open( "/etc/config.yml", "r", "utf-8" )
 
 	try:
 		# yml読み込み 
