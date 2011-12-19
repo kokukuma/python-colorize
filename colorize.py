@@ -9,7 +9,7 @@ import re
 
 
 # 設定ファイルを読み込む関数
-def Read_Color_Scheme(cs):
+def read_color_scheme(cs):
     """ Import Color rule"""
     # 形式の変更用function
     # {regular:**** color:****} -> {regular:****, color:****}
@@ -67,7 +67,7 @@ def Read_Color_Scheme(cs):
 
 
 # 正規表現にしたがって色をつける関数
-def Colorize(target, regular, color):
+def colorize(target, regular, color):
     """ colorize """
     # 色付けfunction
     def coloring(string, color):
@@ -142,11 +142,11 @@ if __name__ == '__main__':
         target = argvs[3]
 
         # カラースキーム取得
-        color_scheme = Read_Color_Scheme(color)
+        color_scheme = read_color_scheme(color)
 
         # カラースキーム毎に色を変更
         for scheme in color_scheme:
-            target = Colorize(target, scheme['regular'], scheme['color'])
+            target = colorize(target, scheme['regular'], scheme['color'])
 
         # 出力
         print target
@@ -157,18 +157,18 @@ if __name__ == '__main__':
         target = argvs[3]
 
         # 色をつけて返却
-        print Colorize(target, r'(^.*$)', color)
+        print colorize(target, r'(^.*$)', color)
 
     # パイプラインで受け取る場合
     elif argc == 3 and option == '-r':
         # カラースキーム取得
-        color_scheme = Read_Color_Scheme(color)
+        color_scheme = read_color_scheme(color)
 
         # 標準入力を取得
         for target in iter(sys.stdin.readline, ""):
             # カラースキーム毎に色を変更
             for scheme in color_scheme:
-                target = Colorize(target, scheme['regular'], scheme['color'])
+                target = colorize(target, scheme['regular'], scheme['color'])
 
             # 出力
             print target,
