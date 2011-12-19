@@ -169,8 +169,7 @@ def main():
             for scheme in color_scheme:
                 target = colorize(target, scheme['regular'], scheme['color'])
 
-            # 出力
-            print target,
+            sys.stdout.write(target)
 
     else:
         errorprint.argument_error()
