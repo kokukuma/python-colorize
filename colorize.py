@@ -22,23 +22,22 @@ def read_color_scheme(cs):
         reg_val2 = re.compile(r'^.*:(?P<match>.*)$')
 
         # regularとcolorを分割
-        array = []
         reg = re.compile(r'(^.*:".*" )')
         scheme_array = reg.split(string)
+        dics = {}
 
         # regularとcolorを抜き出し配列に格納
         for str in scheme_array:
-            if str == "":
+            if not str:
                 continue
-            if str.find('regular') >= 0:
+            if 'regular' in str:
                 key1 = reg_key1.search(str).group('match')
                 val1 = '(' + reg_val1.search(str).group('match') + ')'
-                array.append([key1, val1])
-            elif str.find('color') >= 0:
+                dics[key1] = val1
+            elif 'color' in str:
                 key2 = reg_key2.search(str).group('match')
                 val2 = reg_val2.search(str).group('match')
-                array.append([key2, val2])
-        dics = dict(array)
+                dics[key2] = val2
         return dics
 
     # 設定ファイル読み込み
