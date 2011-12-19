@@ -127,7 +127,7 @@ class errorprint:
 
 
 # main
-if __name__ == '__main__':
+def main():
     argvs = sys.argv
     argc  = len(argvs)
 
@@ -175,3 +175,5 @@ if __name__ == '__main__':
     else:
         errorprint.argument_error()
 
+if __name__ == '__main__':
+    main()
