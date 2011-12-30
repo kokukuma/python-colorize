@@ -1,0 +1,20 @@
+errorlog:
+    rule1:
+        regular:"\[[Ee]rror\]"
+        color:red
+    rule2:
+        regular:"\[emerg\]"
+        color:green
+    rule3:
+        regular:"karino"
+        color:yellow
+ping:
+    rule1:
+        regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
+        color:yellow
+    rule2:
+        regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
+        color:under
+    rule3:
+        regular:"from"
+        color:red

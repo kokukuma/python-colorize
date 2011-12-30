@@ -5,17 +5,18 @@ import yaml
 import codecs
 import sys
 import re
-
+import os
+from optparse import OptionParser
 
 
 # 設定ファイルを読み込む関数
-def read_color_scheme(cs):
-    """ Import Color rule"""
+def read_color_scheme(color_scheme, config_path):
+    """ Import Color scheme"""
     # 形式の変更用function
     # {regular:**** color:****} -> {regular:****, color:****}
     # のためだけに存在しているもの.消したい.
     def string2dict(string):
-        # 正規表現のコンパイル
+    # 正規表現のコンパイル
         reg_key1 = re.compile(r'^(?P<match>.*):".*"')
         reg_val1 = re.compile(r'^.*:"(?P<match>.*)"')
         reg_key2 = re.compile(r'^(?P<match>.*):.*$')
@@ -41,14 +42,14 @@ def read_color_scheme(cs):
         return dics
 
     # 設定ファイル読み込み
-    handle = codecs.open("/etc/config.yml", "r", "utf-8")
+    handle = codecs.open(os.path.expanduser(config_path), "r", "utf-8")
 
     try:
         # yml読み込み
         scheme = yaml.load(handle)
 
         # 指定されたスキームを読み込み・辞書化
-        color_scheme = dict(scheme[cs])
+        color_scheme = dict(scheme[color_scheme])
 
         # 正規表現と色の組み合わせを配列にして返却
         array = []
@@ -62,8 +63,10 @@ def read_color_scheme(cs):
         print u"There is no config.yml"
 
     except KeyError:
-        errorprint.color_scheme_error()
-
+        sys.stderr.write("--- color scheme ---\n")
+        for rcs, scheme in scheme.items():
+            sys.stderr.write("+ " + rcs + "\n")
+        quit()
 
 # 正規表現にしたがって色をつける関数
 def colorize(target, regular, color):
@@ -91,88 +94,72 @@ def colorize(target, regular, color):
     replacement = reg.sub(coloring(r'\1', color), target)
     return replacement
 
+# option_parserを生成する関数
+def build_option_parser():
+    """Make Option Parser"""
+    parser = OptionParser()
+    parser.add_option(
+            '-f', '--configuration-file-path',
+            help="read configuration from. (default: '~/.colorize.yml')",
+            default='~/.colorize.yml'
+            )
+    parser.add_option(
+            '-s', '--color-scheme',
+            help="set scheme of colorize. (default: 'all')",
+            default="all"
+            )
+    parser.add_option(
+            '-r', '--regular',
+            help="set regular expression. (default: '^.*$')",
+            default=r"^.*$"
+            )
+    parser.add_option(
+            '-c', '--color',
+            help="set color. (default: 'red')",
+            default="red"
+            )
+    return parser
 
-# エラー文言を出力するためのクラス
-class errorprint:
-    """error print"""
-    @staticmethod
-    def argument_error():
-        print
-        print 'Illegal argument'
-        print 'colorize -r Color-scheme Target-string'
-        print '         -a Color-name Targe-string'
-        quit()
-    @staticmethod
-    def color_scheme_error():
-        handle = codecs.open("config.yml", "r", "utf-8")
-        scheme = yaml.load(handle)
-        print
-        print u"--- color scheme ---"
-        for rcs, rule in scheme.items():
-            print "+", rcs
-        quit()
-    @staticmethod
-    def color_error():
-        print
-        print u"--- color ---"
-        print u"black"
-        print u"red"
-        print u"green"
-        print u"yellow"
-        print u"blue"
-        print u"purple"
-        print u"cyan"
-        print u"under"
-        quit()
-
-
-# main
+# main(use optperser)
 def main():
-    argvs = sys.argv
-    argc  = len(argvs)
+    parser = build_option_parser()
+    opts, args = parser.parse_args()
 
-    # 引数を取得
-    option = argvs[1]
-    color  = argvs[2]
+    # get options / color_scheme
+    try:
+        config_path = opts.configuration_file_path
+        color_scheme  = opts.color_scheme
 
-    # コマンドラインの引数として受け取る場合
-    if (argc == 4 and option == '-r'):
+        if color_scheme == 'all':
+            color_scheme = [{
+                    'regular':'(' + opts.regular + ')',
+                    'color':opts.color
+                    }]
+        else:
+            color_scheme = read_color_scheme(color_scheme, config_path)
+
+    except Exception, e:
+        parser.error(e)
+
+
+    # 対象をコマンドラインから受け取る場合
+    if (args):
         # 引数を取得
-        target = argvs[3]
-
-        # カラースキーム取得
-        color_scheme = read_color_scheme(color)
+        target = args[0]
 
         # カラースキーム毎に色を変更
         for scheme in color_scheme:
             target = colorize(target, scheme['regular'], scheme['color'])
-
-        # 出力
         print target
 
-    # コマンドラインの引数として受け取る場合
-    elif argc == 4 and option == '-a':
-        # 引数を取得
-        target = argvs[3]
-
-        # 色をつけて返却
-        print colorize(target, r'(^.*$)', color)
-
-    # パイプラインで受け取る場合
-    elif argc == 3 and option == '-r':
-        # カラースキーム取得
-        color_scheme = read_color_scheme(color)
-
+    # 対象を標準出力から受け取る場合
+    else:
         # 標準入力を取得
         for target in iter(sys.stdin.readline, ""):
             # カラースキーム毎に色を変更
             for scheme in color_scheme:
                 target = colorize(target, scheme['regular'], scheme['color'])
-
             sys.stdout.write(target)
-
-    else:
-        errorprint.argument_error()
 
 if __name__ == '__main__':
     main()
