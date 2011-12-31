@@ -7,72 +7,116 @@ Program Overview
 With this program, you can add color to the standard output.
 The simplest usage is to describe the command line as follow:
 
-$ colorize -a (color) (Target string)
+    $ colorize (Target string)
 
-By using configuration file, 
-it is possible to configure more complex coloring rules.
+This command prints the entered characters in red.
+For attaching any color, this command has four options.
+
+
+1, -c and -r option
+C option specifies the color.
+Supported color is as follows:
+
+    + black
+    + red
+    + green
+    + yellow
+    + blue
+    + purple
+    + cyan
+    + under
+
+R option specifies the details of the target string by regular expressions.
+In other words, the following two commands to print the same color.
+
+    $ colorize  (Target string)
+    $ colorize -c red -r '^.*$' (Target string)
+
+2, -s option
+By using configuration file,
+it is possible to configure more complex coloring rules as follows:
+
+    $ colorize -s (coloring-scheme) (Text containing the target string )
+
 The configuration file format is as follows:
 
-(coloring-rule name):
-	(rule name):
-		regular:"(Regular expression for the target string)"
-		color:(color)
+    (coloring-rule name):
+        (rule name):
+            regular:"(Regular expression for the target string)"
+            color:(color)
 
 Regular expressions must be enclosed in ".
-File name is config.yml
-Using the program  by using the configuration file are as follows: 
+The default file path is '~/.colorize.yml'.
 
-$ colorize -r (coloring-rule) (Text containing the target string ) 
+
+3, -f option
+You can also load a differenet file as follows:
+
+    $ colorize -f '(configuration file path)'-s (coloring-scheme) (Text containing the target string )
 
 
 You can use the standard input to the input of the target string.
 
-$ tail -f (somefiles) | colorize -r (coloring-rule) 
+    $ tail -f (somefiles) | colorize -s (coloring-scheme)
 
 
 
-How to install 
+How to install
 --------------
 
 +--- Download and Install
 
 $ cd /usr/local/share/
-$ git clone git@github.com:kokukuma/python-colorize.git  
+$ git clone git@github.com:kokukuma/python-colorize.git
 $ cd python-colorize
-$ sudo ln -s /usr/local/share/python-colorize/colorize.py /usr/bin/colorize 
-$ sudo ln -s /usr/local/share/python-colorize/config.yml /etc/config.yml 
+$ sudo ln -s /usr/local/share/python-colorize/colorize.py /usr/bin/colorize
+$ ln -s /usr/local/share/python-colorize/config.yml ~/.colorize.yml
 
 
 
-Example usage 
+Example usage
 -------------
 
-+--- Simplest Use 
++--- Simplest Use
 
-$ colorize -a red karino
-	--> print "karino" in red 
-
-$ colorize -a green karino
-	--> print "karino" in green 
+$ colorize karino
+    --> print "karino" in red
 
 
-+--- Color by using color configuration file config.yml 
++--- Specify the color
 
-$ colorize -r errorlog "Where is error" 
-	--> print "Where is error". Only error is red. 
-
-
-+--- Add color to the standard output 
-
-$ ping google.com | colorizle -r ping 
-	--> ping output. IP addresses are shown in yellow and underlined. 
+$ colorize -c green karino
+    --> print "karino" in green
 
 
++--- Specify the color and range by regular expression
 
-Example config.yml 
+$ colorize -c green -r '^ka' karino
+    --> print "karino" in green only 'ka'.
+
+
++--- Color by using color configuration file (~/.colorize.yml)
+
+$ colorize -s errorlog "Where is error"
+    --> print "Where is error". Only error is red.
+
+
++--- Color by using color configuration file (~/file/test_colorize.yml)
+
+$ colorize -f '~/file/test_colorize.yml' -s errorlog "Where is error"
+    --> print "Where is error". Only error is red.
+
+
++--- Add color to the standard output
+
+$ ping google.com | colorizle -s ping
+    --> ping output. IP addresses are shown in yellow and underlined.
+
+
+Example config.yml
 -------------
 
-+--- For error syntax highlight 
++--- For error syntax highlight
 errorlog:
     rule1:
         regular:"\[[Ee]rror\]"
@@ -82,23 +126,23 @@ errorlog:
         color:green
 
 
-+--- For ping syntax highlight 
++--- For ping syntax highlight
 ping:
-	rule1:
-		regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
-		color:blue
-	rule2:
-		regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
-		color:under
-	rule3:
-		regular:"from"
-		color:red
+    rule1:
+        regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
+        color:blue
+    rule2:
+        regular:"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"
+        color:under
+    rule3:
+        regular:"from"
+        color:red
 
 
 
 Author
 ------
 
-Tatsuya Karino <kokuban.kumasan@gmail.com> 
+Tatsuya Karino <kokuban.kumasan@gmail.com>
 
 ---

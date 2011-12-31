@@ -35,10 +35,13 @@ def read_color_scheme(color_scheme, config_path):
                 key1 = reg_key1.search(str).group('match')
                 val1 = '(' + reg_val1.search(str).group('match') + ')'
                 dics[key1] = val1
-            elif 'color' in str:
+
+            #elif 'color' in str:
+            if 'color' in str:
                 key2 = reg_key2.search(str).group('match')
                 val2 = reg_val2.search(str).group('match')
                 dics[key2] = val2
+
         return dics
 
     # 設定ファイル読み込み
@@ -47,7 +50,6 @@ def read_color_scheme(color_scheme, config_path):
     try:
         # yml読み込み
         scheme = yaml.load(handle)
-
         # 指定されたスキームを読み込み・辞書化
         color_scheme = dict(scheme[color_scheme])
 
@@ -84,8 +86,10 @@ def colorize(target, regular, color):
             'cyan': '\033[36m',
             'under': '\033[4m',
         }
+
         try:
             return colors[color] + string + colors['clear']
+
         except KeyError:
             return string
 
@@ -128,7 +132,7 @@ def main():
     # get options / color_scheme
     try:
         config_path = opts.configuration_file_path
-        color_scheme  = opts.color_scheme
+        color_scheme = opts.color_scheme
 
         if color_scheme == 'all':
             color_scheme = [{
